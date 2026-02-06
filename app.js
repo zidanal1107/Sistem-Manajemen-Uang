@@ -36,14 +36,19 @@ tambahTabungan.addEventListener("submit", (e) => {
     const tabungan = document.getElementById('tabungan').value;
     let jumlahTabungan = parseInt(localStorage.getItem('tabungan')) || 0;
 
-    if (tabungan === "" || isNaN(tabungan) || parseInt(tabungan) <= 0) {
-        showToast("Isi yang bener PLENGER!", "error");
+    if (tabungan === "" || isNaN(tabungan) ) {
+        showToast("Nominal tidak valid!", "error");
+        return;
+    }
+    if (parseInt(tabungan) <= 0) {
+        showToast("Nominal tabungan harus lebih dari 0!", "error");
         return;
     }
     jumlahTabungan += parseInt(tabungan);
 
     localStorage.setItem('tabungan', JSON.stringify(jumlahTabungan));
     renderTabungan();
+    renderTotalan();
     showToast("Tabungan berhasil ditambahkan!", "success");
     tambahTabungan.reset();
 });
@@ -77,20 +82,30 @@ tambahPengeluaran.addEventListener("submit", (e) => {
     const jumlahBarang = document.getElementById('jumlahBarang').value;
     const pengeluaran = document.getElementById('pengeluaran').value;
 
-    if (pengeluaran > jumlahTabungan) {
-        showToast("Saldo tidak cukup MISKIN!", "error");
-        tambahPengeluaran.reset();
+    const nominal = parseInt(pengeluaran);
+
+    if (nominal > jumlahTabungan - jumlahPengeluaran) {
+        showToast("Tabungan tidak cukup!", "error");
         return;
     }
-    if (namaBarang === "" || jumlahBarang === "" || pengeluaran === "") {
-        showToast("Isi dulu PLENGER!", "error");
+    if (nominal <= 0 || isNaN(nominal)) {
+        showToast("Nominal pengeluaran tidak valid!", "error");
+        return;
+    }
+    if (namaBarang === "" || jumlahBarang === "" || nominal === "") {
+        showToast("Masih ada yang kosong!", "error");
+        return;
+    }
+    const qty = parseInt(jumlahBarang);
+    if (isNaN(qty) || qty <= 0) {
+        showToast("Jumlah barang tidak valid!", "error");
         return;
     }
 
     pengeLuaran.push({
-        id: pengeLuaran.length + 1,
-        namaBarang, jumlahBarang, pengeluaran,
-        waktu: new Date().getHours() + ":" + new Date().getMinutes(),
+        id: Date.now(),
+        namaBarang, jumlahBarang, pengeluaran: nominal,
+        waktu: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         tanggal: new Date().toLocaleDateString()
     });
     jumlahPengeluaran += parseInt(pengeluaran);
@@ -131,7 +146,7 @@ const renderPengeluaran = () => {
             <td class="money">Rp. ${d.pengeluaran}</td>
             <td>${d.waktu}</td> 
             <td>${d.tanggal}</td>
-            <td><button onclick="deletE(${d.id})" class="bg-red-500 text-white px-2 py-1 rounded-md">Hapus</button></td>
+            <td><button onclick="deletePengeluaran(${d.id})" class="bg-red-500 text-white px-2 py-1 rounded-md">Hapus</button></td>
         `;
         tablePengeluaran.appendChild(row);
     });
@@ -147,11 +162,10 @@ const renderTotalan = () => {
     let jumlahTabungan = parseInt(localStorage.getItem('tabungan')) || 0;
     let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
 
-    jumlahTabungan -= jumlahPengeluaran;
-    localStorage.setItem('tabungan', JSON.stringify(jumlahTabungan));
+    let sisa = jumlahTabungan - jumlahPengeluaran;
     const totalTabungan = document.getElementById("total-tabungan");
     const row = document.createElement('p');
-    row.textContent = `Total Tabungan: Rp. ${jumlahTabungan}`;
+    row.textContent = `Total Tabungan: Rp. ${sisa}`;
     totalTabungan.innerHTML = '';
     totalTabungan.appendChild(row);
 };
@@ -162,18 +176,16 @@ renderTotalan();
  * DELETE PENGELUARAN
  * ************/
 
-const deletE = (id) => {
+const deletePengeluaran = (id) => {
     let pengeLuaran = JSON.parse(localStorage.getItem('dataPengeluaran')) || [];
     let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
-    let tabungan = parseInt(localStorage.getItem('tabungan')) || 0;
 
     const itemToDelete = pengeLuaran.find(item => item.id === id);
     if (itemToDelete) {
         jumlahPengeluaran -= parseInt(itemToDelete.pengeluaran);
         pengeLuaran = pengeLuaran.filter(item => item.id !== id);
-
-        localStorage.setItem('dataPengeluaran', JSON.stringify(pengeLuaran));
         localStorage.setItem('pengeluaran', JSON.stringify(jumlahPengeluaran));
+        localStorage.setItem('dataPengeluaran', JSON.stringify(pengeLuaran));
         renderPengeluaran();
         renderTotalan();
         showToast("Pengeluaran berhasil dihapus!", "success");
@@ -192,6 +204,7 @@ const errorDiv = document.getElementById("error");
 
 const editTabungan = (title = "Masukkan nominal") => {
     document.getElementById("popup-title").innerText = title;
+    document.getElementById("popup-keterangan").innerText = "Nominal akan dikurangi dengan total pengeluaran saat ini: Rp. " + (parseInt(localStorage.getItem('pengeluaran')) || 0);
     popup.classList.remove("hidden");
     popup.classList.add("flex");
     popupInput.classList.remove("border", "border-red-500", "bg-red-100");
@@ -201,7 +214,7 @@ const editTabungan = (title = "Masukkan nominal") => {
 popupOk.onclick = () => {
     popup.classList.add("hidden");
 
-    if (popupInput.value === "") {
+    if (popupInput.value === "" || isNaN(popupInput.value) || parseInt(popupInput.value) < 0) {
         errorDiv.classList.remove("hidden");
         popup.classList.remove("hidden");
         popupInput.classList.add("border", "border-red-500", "bg-red-100");
@@ -211,7 +224,7 @@ popupOk.onclick = () => {
     let tabungan = parseInt(localStorage.getItem('tabungan')) || 0;
 
     tabungan = parseInt(popupInput.value);
-    tabungan += jumlahPengeluaran;
+
     localStorage.setItem('tabungan', JSON.stringify(tabungan));
     renderTabungan();
     renderTotalan();
