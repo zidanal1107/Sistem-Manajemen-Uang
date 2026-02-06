@@ -74,7 +74,7 @@ tambahPengeluaran.addEventListener("submit", (e) => {
     const pengeluaran = document.getElementById('pengeluaran').value;
     
     if (pengeluaran > jumlahTabungan) {
-        showToast("Saldo tidak cukup! (MISKIN)", "error");
+        showToast("Saldo tidak cukup MISKIN!", "error");
         tambahPengeluaran.reset();
         return;
     }
