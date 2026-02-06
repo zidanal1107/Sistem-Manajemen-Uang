@@ -148,6 +148,7 @@ const renderTotalan = () => {
     let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
 
     jumlahTabungan -= jumlahPengeluaran;
+    localStorage.setItem('tabungan', JSON.stringify(jumlahTabungan));
     const totalTabungan = document.getElementById("total-tabungan");
     const row = document.createElement('p');
     row.textContent = `Total Tabungan: Rp. ${jumlahTabungan}`;
@@ -164,6 +165,7 @@ renderTotalan();
 const deletE = (id) => {
     let pengeLuaran = JSON.parse(localStorage.getItem('dataPengeluaran')) || [];
     let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
+    let tabungan = parseInt(localStorage.getItem('tabungan')) || 0;
 
     const itemToDelete = pengeLuaran.find(item => item.id === id);
     if (itemToDelete) {
