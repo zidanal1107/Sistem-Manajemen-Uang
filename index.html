@@ -11,6 +11,23 @@
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-scaleIn {
+            animation: scaleIn 0.3s ease forwards;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -18,6 +35,31 @@
     <div id="toast" class="fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium
            transform translate-x-full opacity-0 transition-all duration-300">
         <span id="toast-message"></span>
+    </div>
+
+    <!-- Popup Overlay -->
+    <div id="popup" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50">
+
+        <!-- Popup Box -->
+        <div class="bg-white w-96 rounded-xl shadow-xl p-6 animate-scaleIn">
+            <h3 id="popup-title" class="text-lg font-semibold mb-3">
+                Masukkan nominal tabungan baru
+            </h3>
+
+            <input type="number" id="popup-input" placeholder="nominal tabungan baru"
+                class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400">
+            <div id="error" class="text-red-500 text-sm mt-1 hidden">Isi dulu PLENGER!</div>
+
+            <div class="flex justify-end gap-2 mt-5">
+                <button id="popup-cancel" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+                <button id="popup-ok" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Submit
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <div class="container max-w-4xl w-full p-6">
@@ -36,7 +78,7 @@
                         Tambah tabungan:
                     </label>
 
-                    <input type="number" id="tabungan" placeholder="nominal" 
+                    <input type="number" id="tabungan" placeholder="nominal"
                         class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
 
                     <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
@@ -47,6 +89,9 @@
                 <div id="total-tabungan" class="mt-4 font-medium text-gray-700">
                     <p>Total Tabungan: 0</p>
                 </div>
+                <button onclick="editTabungan()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">
+                    Edit Tabungan
+                </button>
             </div>
 
             <!-- Pengeluaran -->
@@ -93,9 +138,10 @@
                                 <th class="border px-2 py-1">Nominal</th>
                                 <th class="border px-2 py-1">Waktu</th>
                                 <th class="border px-2 py-1">Tanggal Transaksi</th>
+                                <th class="border px-2 py-1">Hapus</th>
                             </tr>
                         </thead>
-                        <tbody id="daftar-pengeluaran">
+                        <tbody id="daftar-pengeluaran" class="text-center">
                             <!-- data -->
                         </tbody>
                     </table>

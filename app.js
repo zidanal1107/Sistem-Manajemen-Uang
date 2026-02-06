@@ -72,11 +72,11 @@ tambahPengeluaran.addEventListener("submit", (e) => {
     let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
     let jumlahTabungan = parseInt(localStorage.getItem('tabungan')) || 0;
     const pengeLuaran = JSON.parse(localStorage.getItem('dataPengeluaran')) || [];
-    
+
     const namaBarang = document.getElementById('namaBarang').value;
     const jumlahBarang = document.getElementById('jumlahBarang').value;
     const pengeluaran = document.getElementById('pengeluaran').value;
-    
+
     if (pengeluaran > jumlahTabungan) {
         showToast("Saldo tidak cukup MISKIN!", "error");
         tambahPengeluaran.reset();
@@ -86,12 +86,12 @@ tambahPengeluaran.addEventListener("submit", (e) => {
         showToast("Isi dulu PLENGER!", "error");
         return;
     }
-    
-    pengeLuaran.push({ 
-        id: pengeLuaran.length+1,
-        namaBarang, jumlahBarang, pengeluaran, 
-        waktu: new Date().getHours() + ":" + new Date().getMinutes(), 
-        tanggal: new Date().toLocaleDateString() 
+
+    pengeLuaran.push({
+        id: pengeLuaran.length + 1,
+        namaBarang, jumlahBarang, pengeluaran,
+        waktu: new Date().getHours() + ":" + new Date().getMinutes(),
+        tanggal: new Date().toLocaleDateString()
     });
     jumlahPengeluaran += parseInt(pengeluaran);
     localStorage.setItem('pengeluaran', JSON.stringify(jumlahPengeluaran));
@@ -124,12 +124,14 @@ const renderPengeluaran = () => {
 
     pengeLuaran.forEach(d => {
         const row = document.createElement('tr');
+        row.classList.add('table-row');
         row.innerHTML = `
             <td>${d.namaBarang}</td>
             <td>${d.jumlahBarang}</td>
-            <td>Rp. ${d.pengeluaran}</td>
+            <td class="money">Rp. ${d.pengeluaran}</td>
             <td>${d.waktu}</td> 
             <td>${d.tanggal}</td>
+            <td><button onclick="deletE(${d.id})" class="bg-red-500 text-white px-2 py-1 rounded-md">Hapus</button></td>
         `;
         tablePengeluaran.appendChild(row);
     });
@@ -154,3 +156,73 @@ const renderTotalan = () => {
 };
 
 renderTotalan();
+
+/**************
+ * DELETE PENGELUARAN
+ * ************/
+
+const deletE = (id) => {
+    let pengeLuaran = JSON.parse(localStorage.getItem('dataPengeluaran')) || [];
+    let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
+
+    const itemToDelete = pengeLuaran.find(item => item.id === id);
+    if (itemToDelete) {
+        jumlahPengeluaran -= parseInt(itemToDelete.pengeluaran);
+        pengeLuaran = pengeLuaran.filter(item => item.id !== id);
+
+        localStorage.setItem('dataPengeluaran', JSON.stringify(pengeLuaran));
+        localStorage.setItem('pengeluaran', JSON.stringify(jumlahPengeluaran));
+        renderPengeluaran();
+        renderTotalan();
+        showToast("Pengeluaran berhasil dihapus!", "success");
+    }
+};
+
+/**************
+ * EDIT TABUNGAN
+ * ************/
+
+const popup = document.getElementById("popup");
+const popupInput = document.getElementById("popup-input");
+const popupOk = document.getElementById("popup-ok");
+const popupCancel = document.getElementById("popup-cancel");
+const errorDiv = document.getElementById("error");
+
+const editTabungan = (title = "Masukkan nominal") => {
+    document.getElementById("popup-title").innerText = title;
+    popup.classList.remove("hidden");
+    popup.classList.add("flex");
+    popupInput.classList.remove("border", "border-red-500", "bg-red-100");
+    errorDiv.classList.add("hidden");
+}
+
+popupOk.onclick = () => {
+    popup.classList.add("hidden");
+
+    if (popupInput.value === "") {
+        errorDiv.classList.remove("hidden");
+        popup.classList.remove("hidden");
+        popupInput.classList.add("border", "border-red-500", "bg-red-100");
+        return;
+    }
+    let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
+    let tabungan = parseInt(localStorage.getItem('tabungan')) || 0;
+    if (parseInt(popupInput.value) < jumlahPengeluaran) {
+        errorDiv.textContent = `Tabungan gak boleh kurang dari total pengeluaran (${jumlahPengeluaran}) PLENGER!`;
+        errorDiv.classList.remove("hidden");
+        popupInput.classList.add("border", "border-red-500", "bg-red-100");
+        popup.classList.remove("hidden");
+        return;
+    }
+    tabungan = parseInt(popupInput.value);
+    localStorage.setItem('tabungan', JSON.stringify(tabungan));
+    renderTabungan();
+    renderTotalan();
+    showToast("Tabungan berhasil diupdate!", "success");
+    popupInput.value = "";
+};
+
+popupCancel.onclick = () => {
+    popup.classList.add("hidden");
+    popupInput.value = "";
+};
