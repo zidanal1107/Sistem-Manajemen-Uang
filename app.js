@@ -209,14 +209,9 @@ popupOk.onclick = () => {
     }
     let jumlahPengeluaran = parseInt(localStorage.getItem('pengeluaran')) || 0;
     let tabungan = parseInt(localStorage.getItem('tabungan')) || 0;
-    if (parseInt(popupInput.value) < jumlahPengeluaran) {
-        errorDiv.textContent = `Tabungan gak boleh kurang dari total pengeluaran (${jumlahPengeluaran}) PLENGER!`;
-        errorDiv.classList.remove("hidden");
-        popupInput.classList.add("border", "border-red-500", "bg-red-100");
-        popup.classList.remove("hidden");
-        return;
-    }
+
     tabungan = parseInt(popupInput.value);
+    tabungan += jumlahPengeluaran;
     localStorage.setItem('tabungan', JSON.stringify(tabungan));
     renderTabungan();
     renderTotalan();
