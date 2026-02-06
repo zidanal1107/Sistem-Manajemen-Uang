@@ -36,6 +36,10 @@ tambahTabungan.addEventListener("submit", (e) => {
     const tabungan = document.getElementById('tabungan').value;
     let jumlahTabungan = parseInt(localStorage.getItem('tabungan')) || 0;
 
+    if (tabungan === "" || isNaN(tabungan) || parseInt(tabungan) <= 0) {
+        showToast("Isi yang bener PLENGER!", "error");
+        return;
+    }
     jumlahTabungan += parseInt(tabungan);
 
     localStorage.setItem('tabungan', JSON.stringify(jumlahTabungan));
@@ -76,6 +80,10 @@ tambahPengeluaran.addEventListener("submit", (e) => {
     if (pengeluaran > jumlahTabungan) {
         showToast("Saldo tidak cukup MISKIN!", "error");
         tambahPengeluaran.reset();
+        return;
+    }
+    if (namaBarang === "" || jumlahBarang === "" || pengeluaran === "") {
+        showToast("Isi dulu PLENGER!", "error");
         return;
     }
     
