@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Uang</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpg" href="test_img_small.jpg">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium
+           transform translate-x-full opacity-0 transition-all duration-300">
+        <span id="toast-message"></span>
+    </div>
+
+    <div class="container max-w-4xl w-full p-6">
+        <div class="content bg-white rounded-xl shadow-lg p-6 space-y-8">
+
+            <h1 class="text-3xl font-bold text-center text-gray-800">
+                Sistem Manajemen Uang
+            </h1>
+
+            <!-- Tabungan -->
+            <div class="content-tabungan border rounded-lg p-4">
+                <form action="" id="tambah-tabungan-form" class="space-y-4">
+                    <h3 class="text-xl font-semibold text-gray-700">Tabungan</h3>
+
+                    <label class="block text-sm text-gray-600">
+                        Tambah tabungan:
+                    </label>
+
+                    <input type="number" id="tabungan" placeholder="nominal" required
+                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
+
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
+                        Tambah
+                    </button>
+                </form>
+
+                <div id="total-tabungan" class="mt-4 font-medium text-gray-700">
+                    <p>Total Tabungan: 0</p>
+                </div>
+            </div>
+
+            <!-- Pengeluaran -->
+            <div class="content-pengeluaran border rounded-lg p-4 space-y-4">
+                <form action="" id="tambah-pengeluaran-form" class="space-y-4">
+                    <h3 class="text-xl font-semibold text-gray-700">Pengeluaran</h3>
+
+                    <label class="block text-sm text-gray-600">
+                        Tambah pengeluaran:
+                    </label>
+
+                    <input type="text" id="namaBarang" placeholder="barang yang dibeli" required
+                        class="w-full border rounded-md px-3 py-2">
+
+                    <input type="number" id="jumlahBarang" placeholder="jumlah barang" required
+                        class="w-full border rounded-md px-3 py-2">
+
+                    <input type="number" id="pengeluaran" placeholder="nominal" required
+                        class="w-full border rounded-md px-3 py-2">
+
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">
+                        Tambah
+                    </button>
+                </form>
+
+                <div id="total-pengeluaran" class="font-medium text-gray-700">
+                    <p>Total Pengeluaran: 0</p>
+                </div>
+
+                <div id="total-transaksi" class="font-medium text-gray-700">
+                    <p>Total Transaksi: 0</p>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-700">
+                    History Transaksi
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full border border-gray-300 text-sm">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border px-2 py-1">Nama Barang</th>
+                                <th class="border px-2 py-1">Jumlah Barang</th>
+                                <th class="border px-2 py-1">Nominal</th>
+                                <th class="border px-2 py-1">Waktu</th>
+                                <th class="border px-2 py-1">Tanggal Transaksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daftar-pengeluaran">
+                            <!-- data -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
